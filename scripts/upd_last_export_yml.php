@@ -1,9 +1,9 @@
 <?php
-define('stalnoy',true);
-include dirname(dirname(__FILE__)).'/connect_mysql/settings.php';
-include dirname(dirname(__FILE__)).'/connect_mysql/safemysql.php';
+require_once  __DIR__.'/settings.php';
+require_once  __DIR__.'/safemysql.php';
+// require_once  dirname(__DIR__).'/fastsql.php';
 define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
-$db = new SafeMysql(array('user' => $db_user, 'pass' => $db_pass,'db' => 'stalnoy', 'charset' => 'utf8'));
+$db = new SafeMysql(array('user' => SetUp::db_user, 'pass' => SetUp::db_pass, 'db' => SetUp::db_database, 'charset' => 'utf8'));
 // TODO: all it work
 // TODO: 123
 
@@ -167,7 +167,7 @@ if($dbv['Характеристики']!='[]'){
   //
   if(!is_array($paramsarry)){
         var_dump($dbv['Характеристики']);
-        var_dump($dbv['Характеристики']);
+        // var_dump($dbv['Характеристики']);
         var_dump($paramsarry);
 
 
@@ -206,16 +206,23 @@ if($dbv['Характеристики']!='[]'){
       //      exit();
       if ($g2[1]="unset"){
             // var_dump($g2[0]);
-        $param = $xml->createElement("param",substr(htmlentities($g2[2]),0,180));
-        $param->setAttribute("name",htmlentities($g2[0]));
+
+            if (strlen(htmlentities($g2[2], ENT_XML1 | ENT_COMPAT))>180){
+              $g2[2]=preg_replace('/(?!\s.*\s)\s.*$/s'," ",substr(htmlentities($g2[2], ENT_XML1 | ENT_COMPAT),0,180),1);
+            }
+        $param = $xml->createElement("param",htmlentities($g2[2], ENT_XML1 | ENT_COMPAT));
+        $param->setAttribute("name",htmlentities($g2[0], ENT_XML1 | ENT_COMPAT));
         $offer->appendChild($param);
       } else {
-        $param = $xml->createElement("param",substr(htmlentities($g2[2]),0,180));
-        $param->setAttribute("name",htmlentities($g2[0]));
-        $param->setAttribute("unit",htmlentities($g2[1]));
+        if (strlen(htmlentities($g2[2], ENT_XML1 | ENT_COMPAT))>180){
+          $g2[2]=preg_replace('/(?!\s.*\s)\s.*$/s'," ",substr(htmlentities($g2[2], ENT_XML1 | ENT_COMPAT),0,180),1);
+        }
+        $param = $xml->createElement("param",htmlentities($g2[2], ENT_XML1 | ENT_COMPAT));
+        $param->setAttribute("name",htmlentities($g2[0], ENT_XML1 | ENT_COMPAT));
+        $param->setAttribute("unit",htmlentities($g2[1], ENT_XML1 | ENT_COMPAT));
         $offer->appendChild($param);
       }
-
+      unset($str);
     } else {
       continue;
     }
@@ -246,7 +253,7 @@ $i++;
 
 
 
-$xml->save(dirname(dirname(__DIR__))."/output/yml/stalnoy_yml.xml");
+$xml->save(dirname(__DIR__)."/output/yml/stalnoy_yml.xml");
 
 
 

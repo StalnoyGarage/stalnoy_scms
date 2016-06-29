@@ -8,11 +8,18 @@ if (PHP_SAPI != "cli") {
 }
 if ($argc>1){
  if ($argv[1]=="-force"){
-   define(FORCE,true);
- }
+  //  define(FORCE,true);
+  $flag=true;
+  $type="force";
+}  elseif ($argv[1]=="-update"){
+  //  define(FORCE,true);
+  $flag=true;
+  $type="update";
+}
+ else $flag=false;
 }
 // $options = $argv;
-// var_dump(FORCE);
+// var_dump($argv[1]);
 
 // exit();
 
@@ -21,12 +28,14 @@ $hash_array=PathHandler::hashArray($array);
 
 
 $file=jsonIO::checkHashFile();
+// var_dump($file);
 
-if ($file==NULL || $file=='null'|| $file=='NULL'){
+// var_dump($hash_array);
+if ($file==NULL || $file=='null'|| $file=='NULL' || $file!=$hash_array){
   $status=jsonIO::writeData($hash_array);
   // var_dump($status);
   if ($status!="No error"){
-    var_dump($status);
+    // var_dump($status);
     exit();
   }
 }
@@ -43,6 +52,7 @@ if ($file==NULL || $file=='null'|| $file=='NULL'){
 $arrayxml=PathHandler::files('/output/xml/*.xml');
 // var_dump($arrayxml);
 // exit();
+$state=0;
 foreach ($array as $a => $b) {
   if(array_key_exists($a,$arrayxml)){
     // $hash_array[$a]
@@ -50,10 +60,13 @@ foreach ($array as $a => $b) {
     // var_dump($xmlt);
     $load = new SimpleXMLElement($xmlt);
     // var_dump((string)$load->attributes()->hash);
-    // var_dump($hash_array[$a_]);
-    $state=0;
-    if (FORCE){
+
+// var_dump($flag);
+    if ($flag==true){
+      if ($type=="force"){
       if ($a!="stalnoy" ){
+        // echo "22222\n";
+        // var_dump($arrayxml[$a]);
         @unlink($arrayxml[$a]);
         echo "Updatind... [$a]".PHP_EOL;
         readXLS($a,$b);
@@ -64,8 +77,14 @@ foreach ($array as $a => $b) {
         echo "Updatind... [$a]".PHP_EOL;
         readXLS($a,$b);
         $state=1;
+      }}
+      if ($type=="update"){
+        $state=1;
       }
     }
+    // echo "1111\n";
+    // var_dump($hash_array[$a."_hash"]);
+    // var_dump((string)$load->attributes()->hash);
     if ($hash_array[$a."_hash"]==(string)$load->attributes()->hash ){
       echo "Actual_xml [$a]".PHP_EOL;
       if(!file_exists($arrayxml[$a."_cater"]) && $a=="stalnoy" ) {
@@ -75,6 +94,7 @@ foreach ($array as $a => $b) {
       }
     } else {
       if ($a!="stalnoy" ){
+        // echo "3333\n";
         @unlink($arrayxml[$a]);
         echo "Updatind... [$a]".PHP_EOL;
         readXLS($a,$b);
@@ -95,6 +115,13 @@ foreach ($array as $a => $b) {
 }
 if ($state==1){
   require_once  __DIR__."/upd_last_export_yml.php";
+}
+if ($state==0){
+  $file_list=glob(dirname(__DIR__)."/output/yml/*.xml");
+  var_dump($file_list);
+  if (count($file_list)==0){
+      require_once  __DIR__."/upd_last_export_yml.php";
+  }
 }
 // $file=jsonIO::writeData($file);
 

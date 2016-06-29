@@ -46,12 +46,13 @@ foreach ($load as $row => $tag) {
   }
   // print_r($load);
   // $pos=strpos((string)$tag->c(string)$tag->col_6ol_6,);
-  if ((string)$tag->col_6 !=0) {
-    $itemcount='-';
-  } else{
+  if ((int)$tag->col_6 != 0) {
     $itemcount='+';
+  } else{
+    $itemcount='-';
   }
   $uuid=(string)$tag->col_1;
+  // var_dump($tag->col_6);
 // $qarray['Идентификатор_товара']=(string)$tag->col_1;
 // if((int)$tag->col_5!=0){
 $qarray['Цена']=round((float)$tag->col_3/KURS,6);
@@ -108,7 +109,7 @@ $qarray['Наличие']=$itemcount;
 
 }
 
-echo "Обновленно принудительно: ".$items.EOL;
+echo "Updated items: ".$items.EOL;
 // file_put_contents(dirname(__FILE__)."\log.txt","Обновленно принудительно: ".$items.PHP_EOL,FILE_APPEND);
 // file_put_contents(dirname(__FILE__)."\log.txt",'DONE'." Memory usage ".(memory_get_peak_usage(true) / 1024 / 1024)." MB".PHP_EOL,FILE_APPEND);
 

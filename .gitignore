@@ -8,4 +8,8 @@ tmp
 *.swp
 test*.php
 log.txt
+<<<<<<< HEAD
 *.bat
+=======
+.bat
+>>>>>>> refs/remotes/restot/master
